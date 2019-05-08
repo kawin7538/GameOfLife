@@ -4,7 +4,7 @@ Created on Sat May  4 21:02:08 2019
 
 @author: Kawin-PC
 """
-
+#import library name numpy and rename it to np
 import numpy as np
 
 class LifeGrid:
@@ -13,9 +13,10 @@ class LifeGrid:
         #initial nrow and ncol
         self._rows=rows
         self._cols=cols
-        
+        #initial dictionary that collect only live cell
         self._liveDict=dict()
-        
+        #initial grid rows*cols
+        self._grid=np.zeros([rows,cols])
         #set all element in grid as DEAD CELL
         self.configure(list())
         
@@ -29,16 +30,25 @@ class LifeGrid:
     def configure(self,coordList):
         #set status of all cell to dead
         self._liveDict.clear()
+        #set all elements in grid as 0
+        self._grid=np.zeros([self.numRows(),self.numCols()])
         #set status of specific cell as LIVE CELL
         for coord in coordList:
             self.setCell(coord[0],coord[1])
+            self[coord[0]][coord[1]]=1
         
     #method that check whether it's live cell
     def isLiveCell(self,row,col):
-        return (row,col) in self._liveDict.keys()
+        return self[row][col]==1
     
     #method that clear that cell to DEAD CELL
     def clearCell(self,row,col):
+        #set value of that cell as 0
+        self._grid[row][col]=0
+        #these lines below has meaning as
+        #   if (row,col) in self._liveDict.keys():
+        #      del self._liveDict[(row,col)]
+        #but I love try-except 55555
         try:
             del self._liveDict[(row,col)]
         except:
@@ -47,6 +57,7 @@ class LifeGrid:
     #method that set that cell to LIVE CELL
     def setCell(self,row,col):
         self._liveDict[(row,col)]=1
+        self._grid[row][col]=1
         
     #method that check live cell around it
     def numLiveNeighbors(self,row,col):
@@ -80,13 +91,17 @@ class LifeGrid:
                 self.isLiveCell(i,j)])
         #return ans-1 if itself is LIVE CELL else return ans
         return (ans-1 if self.isLiveCell(row,col) else ans)
+    
+    #function that abbreviate self._grid[row][col] to self[row][col]
+    def __getitem__(self,row):
+        return self._grid[row]
         
     
 # this part will run if this file is main file
+# end of description this file
 if __name__ == "__main__":
     a=LifeGrid(5,5)
     a.configure([(0,0),(1,1),(2,0)])
     print(a._liveDict)
     print(a.numLiveNeighbors(1,0))
-    
-    
+    print(a[2],a[1][1])

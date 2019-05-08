@@ -1,26 +1,24 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat May  4 00:36:19 2019
+Created on Sat May  4 21:02:08 2019
 
 @author: Kawin-PC
 """
+#import library name numpy and rename it to np
 import numpy as np
 
 class LifeGrid:
-    
-    #initial constant DEAD CELL and LIVE CELL
-    DEAD_CELL=0
-    LIVE_CELL=1
     
     def __init__(self,rows,cols):
         #initial nrow and ncol
         self._rows=rows
         self._cols=cols
-        #initial grid size nrow*ncol as None
-        self._grid=[[0]*cols for i in range(rows)]
+        #initial dictionary that collect only live cell
+        self._liveDict=dict()
+        #initial grid rows*cols
+        self._grid=np.zeros([rows,cols])
         #set all element in grid as DEAD CELL
         self.configure(list())
-        
         
     #method that return nrow and ncol
     def numRows(self):
@@ -31,24 +29,35 @@ class LifeGrid:
     #configure status of cell from live cell in coordList
     def configure(self,coordList):
         #set status of all cell to dead
-        for i in range(self.numRows()):
-            for j in range(self.numCols()):
-                self.clearCell(i,j) 
+        self._liveDict.clear()
+        #set all elements in grid as 0
+        self._grid=np.zeros([self.numRows(),self.numCols()])
         #set status of specific cell as LIVE CELL
         for coord in coordList:
             self.setCell(coord[0],coord[1])
+            self[coord[0]][coord[1]]=1
         
     #method that check whether it's live cell
     def isLiveCell(self,row,col):
-        return self[row][col]==self.LIVE_CELL
+        return self[row][col]==1
     
     #method that clear that cell to DEAD CELL
     def clearCell(self,row,col):
-        self[row][col]=self.DEAD_CELL
+        #set value of that cell as 0
+        self._grid[row][col]=0
+        #these lines below has meaning as
+        #   if (row,col) in self._liveDict.keys():
+        #      del self._liveDict[(row,col)]
+        #but I love try-except 55555
+        try:
+            del self._liveDict[(row,col)]
+        except:
+            return ;
         
     #method that set that cell to LIVE CELL
     def setCell(self,row,col):
-        self[row][col]=self.LIVE_CELL
+        self._liveDict[(row,col)]=1
+        self._grid[row][col]=1
         
     #method that check live cell around it
     def numLiveNeighbors(self,row,col):
@@ -82,17 +91,17 @@ class LifeGrid:
                 self.isLiveCell(i,j)])
         #return ans-1 if itself is LIVE CELL else return ans
         return (ans-1 if self.isLiveCell(row,col) else ans)
-        
-    #special method that can access row directly, dont need self._grid anymore
+    
+    #function that abbreviate self._grid[row][col] to self[row][col]
     def __getitem__(self,row):
         return self._grid[row]
+        
     
 # this part will run if this file is main file
+# end of description this file
 if __name__ == "__main__":
     a=LifeGrid(5,5)
     a.configure([(0,0),(1,1),(2,0)])
-    print(a._grid)
+    print(a._liveDict)
     print(a.numLiveNeighbors(1,0))
-    print(a.LIVE_CELL,a.DEAD_CELL)
-    
-    
+    print(a[2],a[1][1])

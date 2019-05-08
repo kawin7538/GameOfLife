@@ -6,20 +6,34 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+
+#this file is create from 
+
+#all functions from PyQt5 is only GUI part , let it be
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPainter, QColor
+#import numpy and rename it to np
 import numpy as np
+#import library name sys
 import sys
-from LifeGrid import LifeGrid
-from evolve_func import evolve
+#import class LifeGrid from LifeGrid_Algo2
+from LifeGrid_Algo2 import LifeGrid
+#import function name evolve_v2 from evolve_func
+from evolve_func import evolve_v2
 
+#class Ui_MainWindow that created from QtDesigner (only __init__ and nextclick is written later)
 class Ui_MainWindow(object):
+    #initial function in class
     def __init__(self,HEIGHT,WIDTH,init=[]):
+        #create LifeGrid
         self._grid=LifeGrid(HEIGHT,WIDTH)
+        #configure grid
         self._grid.configure(init)
+        #set height and width
         self._height=HEIGHT
         self._width=WIDTH
     
+    #this function is almost pure-gui phase, look at clicked.connect only
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -58,14 +72,15 @@ class Ui_MainWindow(object):
         self.pushButton.setGeometry(QtCore.QRect(230, 0, 75, 23))
         self.pushButton.setObjectName("pushButton")
         
+        #set function nextclick activate when click it , to be continue in nextclick()
         self.pushButton.clicked.connect(self.nextclick)
         
         MainWindow.setCentralWidget(self.centralwidget)
-
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         
+        #set color in table , set red if live , and white when died
         for i in range(5):
             for j in range(5):
                 self.tableWidget.setItem(i, j, QtWidgets.QTableWidgetItem())
@@ -74,6 +89,7 @@ class Ui_MainWindow(object):
                 else:
                     self.tableWidget.item(i,j).setBackground(QColor(255,255,255))
 
+    #this is only change name of element of GUI , let it be.
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "GameOfLife"))
@@ -81,22 +97,31 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Performance"))
         self.pushButton.setText(_translate("MainWindow", "NEXT"))
        
+    #the most important in this file, function that change with condition of game
     def nextclick(self):
-        evolve(self._grid)
+        evolve_v2(self._grid)
+        #set color in table , set red if live , and white when died
         for i in range(5):
             for j in range(5):
                 if self._grid.isLiveCell(i,j):
                     self.tableWidget.item(i,j).setBackground(QColor(255,0,0))
                 else:
-                    self.tableWidget.item(i,j).setBackground(QColor(255,255,255))
-
+                    self.tableWidget.item(i,j).setBackground(QColor(255,255,255))     
+                    
 
 if __name__ == "__main__":
+    #create random live cell at rate 70%
     INIT_CONFIG=[(np.random.randint(0,5),np.random.randint(0,5)) for j in range(int(5*5*0.7))]
+    #create new application
     app = QtWidgets.QApplication(sys.argv)
+    #create new main window
     MainWindow = QtWidgets.QMainWindow()
+    #initial ui as new GUI with 5*5 cells
     ui = Ui_MainWindow(5,5,INIT_CONFIG)
+    #link ui to MainWindow
     ui.setupUi(MainWindow)
+    #show main window
     MainWindow.show()
+    #pause code until app is finished
     sys.exit(app.exec_())
 

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Apr 23 17:36:43 2019
+Created on Sat May  4 00:36:19 2019
 
 @author: Kawin-PC
 """
+import numpy as np
 
 class LifeGrid:
     
@@ -16,9 +17,10 @@ class LifeGrid:
         self._rows=rows
         self._cols=cols
         #initial grid size nrow*ncol as None
-        self._grid=[[None]*cols for i in range(rows)]
+        self._grid=[[0]*cols for i in range(rows)]
         #set all element in grid as DEAD CELL
         self.configure(list())
+        
         
     #method that return nrow and ncol
     def numRows(self):
@@ -86,11 +88,11 @@ class LifeGrid:
         return self._grid[row]
     
 # this part will run if this file is main file
+# So it should not run if it's not main file
 if __name__ == "__main__":
     a=LifeGrid(5,5)
     a.configure([(0,0),(1,1),(2,0)])
     print(a._grid)
     print(a.numLiveNeighbors(1,0))
     print(a.LIVE_CELL,a.DEAD_CELL)
-    
     
